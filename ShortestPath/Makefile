@@ -1,6 +1,6 @@
 all:
-	g++ main.cpp shortestPath.cpp
-	./a.out
+	@g++ main.cpp shortestPath.cpp
+	@./a.out
 
 test:
 	g++ main.cpp shortestPath.cpp
