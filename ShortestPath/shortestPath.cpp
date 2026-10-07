@@ -116,3 +116,35 @@ std::vector<int> shortest_path(const Graph& graph, int start_node){
     }
     return dist;
 }
+
+void generate_test_file(const std::string& filename, int num_graphs, int n, int max_weight, double density) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error creating " << filename << std::endl;
+        return;
+    }
+
+    std::mt19937 rng(1337); // fixed seed for reproducible tests rn; if random is wanted use std::random_device{}()
+    std::uniform_real_distribution<double> dist_prob(0.0, 1.0);
+    std::uniform_int_distribution<int> dist_weight(1, max_weight);
+
+    for (int g = 0; g < num_graphs; ++g) {
+        file << n << "\n";
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i == j) {
+                    file << 0;
+                } else if (dist_prob(rng) < density) {
+                    file << dist_weight(rng);
+                } else {
+                    file << 0;
+                }
+                if (j + 1 < n) file << " ";
+            }
+            file << "\n";
+        }
+        file << "~\n";
+    }
+    file << "END\n";
+    file.close();
+}

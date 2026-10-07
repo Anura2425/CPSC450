@@ -10,6 +10,7 @@
 #include <functional>
 #include <cctype>
 #include <string>
+#include <random>
 
 using Matrix = std::vector<std::vector<int>>;
 using Edge = std::pair<int, int>;              // {neighbor_node, weight}
@@ -24,5 +25,8 @@ std::vector<Graph> load_graphs(const std::string& filename);
 // output helper for testanswers 
 int output_list(const std::vector<int>& dep_list, const std::string& outfile);
 
-// solves shortest path for a graph starting at source node 0
+// solves shortest path for a graph starting at source node 0, uses dijkstras
 std::vector<int> shortest_path(const Graph& graph, int start_node = 0);
+
+// test file generator for fun
+void generate_test_file(const std::string& filename, int num_graphs = 1, int n = 100, int max_weight = 20, double density = 0.3);

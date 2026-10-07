@@ -17,5 +17,6 @@ clean:
 	@rm testoutput1.txt
 	@rm testoutput2.txt
 	@rm testoutput3.txt
+	@rm testoutput4.txt
 	@echo "All tests passed and files cleaned"
 
