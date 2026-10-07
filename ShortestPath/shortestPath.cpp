@@ -1,50 +1,118 @@
 #include "shortestPath.h"
 
-using Edge = std::pair<int, int>;
-using Graph = std::vector<std::vector<Edge>>;
-
-std::vector<int> load_matrix(std::string filename){
+std::vector<Matrix> load_matrices(const std::string& filename){
 
     std::ifstream file(filename);
+    std::vector<Matrix> matrices;
 
     if (!file.is_open()) {
         std::cerr << "Error: Could not open test file" << std::endl;
-        return;
+        return matrices;
     }
 
-    char ch;
-    std::vector<std::vector<int>> temp_matrix;
-    while(!file.eof()){
+    std::string line;
+    while (std::getline(file, line)){
+        if(line.empty() || line == "~") continue;
+        if(line == "END") break;
 
-        if(ch == '~'){
-            // new test matrix (return and clear the last)
-            temp_matrix.clear();
-        } else if(std::isdigit(static_cast<unsigned char>(ch))){
-            
+        // n is the size of the matrix (first number in the test files above the actual matrices)
+        int n = std::stoi(line);
+        Matrix matrix (n, std::vector<int>(n,0));
+
+        // read in n rows
+        for(int i = 0; i < n; ++i){
+            if(std::getline(file,line)){
+                std::stringstream ss(line);
+                for (int j = 0; j < n; ++j){
+                    ss >> matrix[i][j];
+                }
+            }
         }
+        matrices.push_back(matrix);
     }
-
     file.close();
-
-    std::vector<int> adj_matrix = {0, 1, 2}; // dummy
-    return adj_matrix;
+    return matrices;
 }
 
+std::vector<Graph> load_graphs(const std::string& filename){
+    std::ifstream file(filename);
+    std::vector<Graph> graphs;
 
-int output_list(std::vector<int> dep_list, std::string outfile){
-    for (int i = 0; i < dep_list.size(); ++i){
-        std::cout << dep_list.at(i);
-        if (i == dep_list.size() - 1){
-            std::cout << "\n";
-            break;
-        }
-        std::cout << ", ";
+    if (!file.is_open()){
+        std::cerr << "Error: could not open test file";
+        return graphs;
     }
+
+    std::string line;
+    while (std::getline(file, line)){
+        if(line.empty() || line == "~") continue;
+        if(line == "END") break;
+
+        int n = std::stoi(line);
+        Graph graph(n);
+
+        for(int i = 0; i < n; ++i){
+            if (std::getline(file,line)){
+                std::stringstream ss(line);
+                for (int j = 0; j < n; ++j){
+                    int weight;
+                    ss >> weight;
+                    if (weight!=0){
+                        graph[i].push_back({j,weight});
+                    }
+                }
+            }
+        }
+        graphs.push_back(graph);
+    }
+    file.close();
+    return graphs;
+}
+
+int output_list(const std::vector<int>& dep_list, const std::string& outfile){
+    std::ostream* out = &std::cout;
+    std::ofstream file_out;
+
+    if(!outfile.empty()){
+        file_out.open(outfile, std::ios::app);
+        if(file_out.is_open()){
+            out = &file_out;
+        }
+    }
+
+    for(size_t i = 0; i < dep_list.size(); ++i){
+        *out << dep_list[i];
+        if (i + 1 < dep_list.size()){
+            *out << ",";
+        }
+    }
+    *out << "\n";
     return 0;
 }
 
-std::vector<int> solve(){
-    std::priority_queue<int, std::vector<int>, std::greater<int>> pq; // min heap for node process order (stores edge weights)
+std::vector<int> shortest_path(const Graph& graph, int start_node){
+    int n = graph.size();
+    std::vector<int> dist(n, std::numeric_limits<int>::max());
+    using Element = std::pair<int, int>;
+    std::priority_queue<Element, std::vector<Element>, std::greater<Element>> pq;
+    
+    dist[start_node] = 0;
+    pq.push({0, start_node});
+    while(!pq.empty()){
+        auto [d,u] = pq.top();
+        pq.pop();
 
-    return {123};
+        if (d > dist[u]) continue;
+
+        for (const auto& edge : graph[u]){
+            int v = edge.first;
+            int weight = edge.second;
+
+            if (dist[u] + weight< dist[v]){
+                dist[v] = dist[u] + weight;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    return dist;
 }

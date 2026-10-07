@@ -16,7 +16,7 @@ using Edge = std::pair<int, int>;              // {neighbor_node, weight}
 using Graph = std::vector<std::vector<Edge>>;  // adj list
 
 // loads all adjacency matrices from the file
-std::vector<Matrix> load_matrix(const std::string& filename);
+std::vector<Matrix> load_matrices(const std::string& filename);
 
 // converts directly to Adjacency List graphs
 std::vector<Graph> load_graphs(const std::string& filename);
