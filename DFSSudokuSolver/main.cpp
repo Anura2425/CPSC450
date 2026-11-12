@@ -15,14 +15,18 @@ int main(int argc, char* argv[])
     std::cerr << "usage: " << argv[0] << " <input file> <output file>\n";
     return 1;
   }
-  Board board;
-  if (!read_board(argv[1], board)) {
+  Board puzzle;
+  if (!read_board(argv[1], puzzle)) {
     std::cerr << "error: cannot read board from " << argv[1] << "\n";
     return 1;
   }
+  Board board = puzzle;
   if (!solve(board, 0, 0)) {
     std::cout << argv[1] << ": no solution\n";
     return 1;
+  }
+  if (!is_solution(puzzle, board)){
+    std::cerr << "error: internal verification failed for " << argv[1] << "\n";
   }
   if (!write_board(argv[2], board)) {
     std::cerr << "error: cannot write board to " << argv[2] << "\n";
